@@ -1,0 +1,105 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "permissions": {
+    "defaultMode": "default",
+    "disableBypassPermissionsMode": "disable",
+    "disableAutoMode": "disable",
+    "allow": [],
+    "ask": [
+      "Bash(rm *)",
+      "Bash(git push *)",
+      "Bash(git reset --hard *)",
+      "Bash(git clean *)",
+      "Bash(git init *)"
+    ],
+    "deny": [
+      "Read(/private/**)",
+      "Edit(/private/**)",
+      "Edit(/reference/**)",
+      "Edit(/.claude/**)",
+      "Edit(/CLAUDE.md)",
+      "Edit(/.mcp.json)",
+      "Read(.env)",
+      "Read(.env.*)",
+      "Read(**/*.pem)",
+      "Read(**/*.key)",
+      "Read(**/*.p12)",
+      "Read(**/*.pfx)",
+      "Read(**/id_rsa*)",
+      "Read(**/id_ed25519*)",
+      "Read(**/secrets/**)",
+      "Read(**/credentials.json)",
+      "Read(~/.ssh/**)",
+      "Read(~/.aws/**)",
+      "Read(~/.gnupg/**)",
+      "Read(~/.kube/**)",
+      "Read(~/.docker/**)",
+      "Read(~/.config/gh/**)",
+      "Read(~/.config/gcloud/**)",
+      "Read(~/.azure/**)",
+      "Read(~/.netrc)",
+      "Read(~/.npmrc)",
+      "Read(~/.pypirc)",
+      "Read(~/.git-credentials)",
+      "Bash(sudo *)"
+    ]
+  },
+  "sandbox": {
+    "enabled": true,
+    "failIfUnavailable": true,
+    "autoAllowBashIfSandboxed": true,
+    "allowUnsandboxedCommands": false,
+    "excludedCommands": [],
+    "filesystem": {
+      "denyRead": [
+        "~/"
+      ],
+      "denyWrite": [
+        "./reference",
+        "./private"
+      ],
+      "allowWrite": []
+    },
+    "network": {
+      "allowedDomains": []
+    },
+    "credentials": {
+      "envVars": [
+        {
+          "name": "ANTHROPIC_API_KEY",
+          "mode": "deny"
+        },
+        {
+          "name": "OPENAI_API_KEY",
+          "mode": "deny"
+        },
+        {
+          "name": "GITHUB_TOKEN",
+          "mode": "deny"
+        },
+        {
+          "name": "GH_TOKEN",
+          "mode": "deny"
+        },
+        {
+          "name": "NPM_TOKEN",
+          "mode": "deny"
+        },
+        {
+          "name": "AWS_ACCESS_KEY_ID",
+          "mode": "deny"
+        },
+        {
+          "name": "AWS_SECRET_ACCESS_KEY",
+          "mode": "deny"
+        },
+        {
+          "name": "AWS_SESSION_TOKEN",
+          "mode": "deny"
+        }
+      ]
+    }
+  },
+  "enableAllProjectMcpServers": false,
+  "disableClaudeAiConnectors": true
+}

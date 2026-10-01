@@ -1,0 +1,49 @@
+# ---------------------------------------------------------------------------
+# Files listed here are never saved into git, so they can never be uploaded to
+# GitHub by accident. This is separate from what Claude can see: Claude's rules
+# live in .claude/settings.json.
+# ---------------------------------------------------------------------------
+
+# The private/ folder: ignore everything in it except the two template files
+private/*
+!private/README.md
+!private/TEST-SECRET.txt
+
+# Secrets and credentials
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+id_rsa*
+id_ed25519*
+secrets/
+credentials.json
+
+# Your personal Claude Code overrides for this project (not meant to be shared)
+.claude/settings.local.json
+CLAUDE.local.md
+
+# Operating system clutter
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editor clutter
+.vscode/
+.idea/
+*.swp
+
+# Common build output and downloaded packages
+node_modules/
+dist/
+build/
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# Logs
+*.log

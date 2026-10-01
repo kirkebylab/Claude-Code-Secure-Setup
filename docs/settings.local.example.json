@@ -1,0 +1,13 @@
+{
+  "sandbox": {
+    "excludedCommands": ["git init"],
+    "filesystem": {
+      "allowRead": [
+        ".",
+        "~/.gitconfig",
+        "~/.gitignore_global",
+        "~/.config/git"
+      ]
+    }
+  }
+}
