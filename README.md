@@ -73,6 +73,14 @@ Either lock alone has gaps. Together they cover each other.
    file. Make it by copying `docs/settings.local.example.json` into `.claude/`
    and renaming the copy to `settings.local.json`. Without it Claude cannot read
    the project and test 6 below will fail.
+
+   On a Mac or Linux, the quickest way is to open a terminal in the project
+   folder and paste this one line:
+
+   ```bash
+   cp docs/settings.local.example.json .claude/settings.local.json
+   ```
+
 4. **Accept the trust prompt** if Claude Code asks whether you trust this folder.
 5. **Check the sandbox** by typing `/sandbox` in Claude Code.
    - Mac: nothing to install, it should already be on.
