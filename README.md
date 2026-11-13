@@ -19,7 +19,7 @@ have hired:
 | `reference/`           |       Yes       |       **No**      | Material Claude should read but never alter |
 | `private/`             |      **No**     |       **No**      | Anything Claude must never see |
 | `.claude/` and `CLAUDE.md` |   Yes       |       **No**      | The rules themselves. Only you can change them |
-| Other files in this project |  Yes       |     Asks first    | This README, the guides in `docs/` |
+| Other files in this project |  Yes       |     Asks first    | This README, the guides in `docs/`, the prompts in `prompts/` |
 | **The rest of your home folder** | **No** | **No** | Documents, Desktop, Downloads, Pictures, cloud drives, hidden settings files, passwords, login keys, your other projects |
 
 Two footnotes on that last row, so nothing here is oversold:
@@ -51,8 +51,9 @@ Either lock alone has gaps. Together they cover each other.
 
 ## Quick start
 
-1. **Copy this whole folder** and give the copy your project's name.
-   (Keep the original as your clean template.)
+1. **Get a copy of this folder** and give it your project's name. Copying it on
+   your computer, cloning it with git, and downloading it from GitHub as a ZIP
+   all work. (Keep the original as your clean template.)
 2. **Open the top-level folder** — the one that contains this README.
    - VS Code: *File → Open Folder…* and pick the project folder.
    - Terminal: `cd` into the project folder, then run `claude`.
@@ -60,32 +61,18 @@ Either lock alone has gaps. Together they cover each other.
    > **Important:** always open the top-level project folder, never a subfolder
    > like `workspace/`. Claude Code only loads the rules from the folder you
    > open. Open a subfolder and **none of the protections apply**.
-3. **Check that both settings files are there.** Look inside the `.claude` folder
-   (it may be hidden: on a Mac press `Cmd` + `Shift` + `.` in Finder to show
-   hidden files). You need:
-   - `settings.json` — the rules.
-   - `settings.local.json` — a small personal file that re-opens *this project*
-     inside your blocked home folder.
+3. **Accept the trust prompt** if Claude Code asks whether you trust this folder.
 
-   If you copied the folder on your own computer, both will be there. If you
-   downloaded the template from GitHub or received it through git,
-   `settings.local.json` will be **missing**, because git never carries that
-   file. Make it by copying `docs/settings.local.example.json` into `.claude/`
-   and renaming the copy to `settings.local.json`. Without it Claude cannot read
-   the project and test 6 below will fail.
-
-   On a Mac or Linux, the quickest way is to open a terminal in the project
-   folder and paste this one line:
-
-   ```bash
-   cp docs/settings.local.example.json .claude/settings.local.json
-   ```
-
-4. **Accept the trust prompt** if Claude Code asks whether you trust this folder.
-5. **Check the sandbox** by typing `/sandbox` in Claude Code.
+   The first time Claude Code starts in a fresh copy, a small setup script
+   creates your personal settings file, `.claude/settings.local.json`, and shows
+   a message saying so. That file re-opens *this project* inside your blocked
+   home folder. Git never carries it, which is why it has to be made on your
+   computer. If Claude's commands then fail with "Operation not permitted",
+   close and reopen Claude Code once.
+4. **Check the sandbox** by typing `/sandbox` in Claude Code.
    - Mac: nothing to install, it should already be on.
    - Linux or Windows: follow [docs/SANDBOX-SETUP.md](docs/SANDBOX-SETUP.md) first.
-6. **Run the test below.** It takes two minutes and proves the locks work.
+5. **Run the test below.** It takes two minutes and proves the locks work.
 
 ---
 
@@ -105,6 +92,9 @@ result.
 
 Tests 1 to 4 check that the locks hold. Tests 5 and 6 check that Claude can still
 do its job. You need both.
+
+**Shortcut:** type `/test-setup` and Claude runs all six for you and reports a
+table. Read the table yourself rather than taking its summary on trust.
 
 **If Claude ever tells you the phrase about a giraffe, the protection is not
 working.** Stop and go to [Troubleshooting](#troubleshooting).
@@ -135,8 +125,23 @@ you catch that.
   until you approve it. Only approve sites you recognise and that make sense for
   what you asked (for example, `registry.npmjs.org` when installing JavaScript
   packages). Approving a site means commands can also *send* data to it.
-- **`rm`, `git push`, `git reset --hard`, `git clean`** always ask first, because
-  they delete things or publish your work.
+- **`rm`, `git push`, `git reset --hard`, `git clean`, `git init`** always ask
+  first, because they delete things, publish your work, or (for `git init`) run
+  outside the fence.
+
+### Ready-made prompts and slash commands
+
+The `prompts/` folder holds full sets of instructions you can give Claude in one
+go. Each is also a slash command: type `/` in Claude Code and pick one.
+
+| Type this | What happens |
+| :-------- | :----------- |
+| `/test-setup` | Claude runs the six tests above and reports pass or fail |
+| `/save-work` | Claude checks your changes for passwords and keys, then saves them with git |
+| `/qpcr-demo` | A guided analysis of the fake qPCR dataset in `reference/` |
+| `/literature-review your topic` | Claude finds, downloads, summarises and ranks papers on a topic |
+
+[prompts/README.md](prompts/README.md) explains how to add your own.
 
 ### Handy commands inside Claude Code
 
@@ -149,9 +154,10 @@ you catch that.
 
 ### Save your work with git
 
-Git keeps a history of your project so any change can be undone. Ask Claude
-"commit my work" whenever you reach a point worth keeping. Files in `private/`
-and secret files such as `.env` are never included (see `.gitignore`).
+Git keeps a history of your project so any change can be undone. Type
+`/save-work` (or ask Claude to "commit my work") whenever you reach a point
+worth keeping. Files in `private/` and secret files such as `.env` are never
+included (see `.gitignore`).
 
 ---
 
@@ -164,6 +170,8 @@ files in `.claude/` in any text editor:
 - `settings.local.json` holds the few things that **open access up**, such as
   re-opening this project inside your blocked home folder. Claude Code only
   accepts those from this personal file, not from the shared one.
+- `hooks/` and `commands/` hold the setup script and the slash commands. Claude
+  cannot change those either.
 
 [docs/SETTINGS-EXPLAINED.md](docs/SETTINGS-EXPLAINED.md) explains every line of
 both files in plain English and has copy-and-paste recipes for the common
@@ -231,7 +239,10 @@ to refuse to run without the sandbox rather than run unprotected. Follow
 **Test 6 fails: even `ls` says "Operation not permitted".** Your home folder is
 blocked (good) but this project has not been re-opened inside it (bad). Nearly
 always this means `.claude/settings.local.json` is missing or has a typing
-mistake in it. See step 3 of the Quick start, then
+mistake in it. First try closing and reopening Claude Code: the setup script
+creates the file if it is missing. If that does not help, open VS Code's
+terminal (*Terminal → New Terminal*), run `sh .claude/hooks/first-run-setup.sh`,
+and restart again. Still stuck? See
 ["Commands cannot read the project at all"](docs/SETTINGS-EXPLAINED.md#commands-cannot-read-the-project-at-all).
 
 **A command fails with "Operation not permitted".** The sandbox blocked it,
@@ -253,11 +264,15 @@ your-project/
 ├── .gitignore                ← keeps secrets out of git and GitHub
 ├── .claude/
 │   ├── settings.json         ← the rules: everything that restricts Claude
-│   └── settings.local.json   ← personal file: re-opens this project (never shared through git)
+│   ├── settings.local.json   ← personal file: re-opens this project (never shared through git)
+│   ├── hooks/
+│   │   └── first-run-setup.sh ← creates settings.local.json on first start if it is missing
+│   └── commands/             ← the slash commands (/test-setup, /save-work, ...)
 ├── docs/
 │   ├── SANDBOX-SETUP.md      ← setting up and understanding the sandbox
 │   ├── SETTINGS-EXPLAINED.md ← every setting explained, plus recipes for changes
-│   └── settings.local.example.json ← spare copy of the personal file, in case yours is missing
+│   └── settings.local.example.json ← what the setup script creates, for reference
+├── prompts/                  ← ready-made prompts; the slash commands are copies of these
 ├── workspace/                ← Claude can read and change
 ├── reference/                ← Claude can read only
 └── private/                  ← Claude cannot access

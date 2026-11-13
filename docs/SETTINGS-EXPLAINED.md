@@ -1,17 +1,19 @@
 # The settings files explained
 
-Two files in the `.claude/` folder hold the rules for this project:
+The `.claude/` folder holds the rules for this project:
 
 | File | Its job |
 | :--- | :------ |
 | `settings.json` | The rulebook. Everything that **restricts** Claude |
 | `settings.local.json` | A short personal file. The few things that **open access up**, above all re-opening this project inside your blocked home folder |
+| `hooks/first-run-setup.sh` | A small script that creates `settings.local.json` if it is missing |
+| `commands/` | The slash commands, such as `/save-work`: copies of the prompts in `prompts/` |
 
-This page explains every part of both in plain English, then gives
-copy-and-paste recipes for the changes people most often need.
+This page explains every part of the two settings files in plain English, then
+gives copy-and-paste recipes for the changes people most often need.
 
-Claude cannot edit either file. Only you can. That is deliberate: a rulebook the
-contractor can rewrite is not much of a rulebook.
+Claude cannot edit anything in `.claude/`. Only you can. That is deliberate: a
+rulebook the contractor can rewrite is not much of a rulebook.
 
 ---
 
@@ -132,12 +134,15 @@ Empty on purpose. Nothing is pre-approved. Recipes below add to it.
   "Bash(rm *)",
   "Bash(git push *)",
   "Bash(git reset --hard *)",
-  "Bash(git clean *)"
+  "Bash(git clean *)",
+  "Bash(git init *)"
 ],
 ```
-Four commands that always stop and ask, even inside the sandbox: deleting files,
-publishing your work to the internet, and two git commands that throw away
-changes. `Bash(...)` means "a command Claude runs".
+Five commands that always stop and ask, even inside the sandbox: deleting files,
+publishing your work to the internet, two git commands that throw away changes,
+and `git init`, which starts a new git history and is the one command allowed
+to run outside the fence (see `excludedCommands` below). `Bash(...)` means "a
+command Claude runs".
 
 These are speed bumps, not walls. There are other ways to delete a file than
 `rm`. The real protection against losing work is committing to git regularly.
@@ -226,7 +231,9 @@ things without reading them). Prefer to approve every command yourself? Change
 ```
 Strict mode. If the fence blocks a command, Claude cannot simply re-run it
 outside the fence. `excludedCommands` is the list of commands permitted to run
-with no fence; it is empty, and best left that way.
+with no fence. It is empty here. The template's one exception, `git init`, is
+listed in `settings.local.json` instead (see below), and Claude Code always
+asks you before running it. Keep this list as short as you possibly can.
 
 ```json
 "filesystem": {
@@ -245,12 +252,15 @@ folder, and why `private/` stays blocked although it sits inside the readable
 project.
 
 ```json
-  "denyWrite": ["./reference", "./private"],
+  "denyWrite": ["./reference", "./private", "./.claude"],
   "allowWrite": []
 },
 ```
-Commands can write inside this project only, and not in these two folders.
-Claude Code also automatically protects its own rule files from commands.
+Commands can write inside this project only, and not in these three folders.
+The `./.claude` entry stops a command from changing the rules, the setup
+script, or the slash commands. (Claude Code itself still updates
+`settings.local.json` when you click "Yes, and don't ask again"; that is not a
+command Claude runs.)
 
 ```json
 "network": {
@@ -269,6 +279,47 @@ Some programs keep passwords in your computer's memory as "environment
 variables". These lines hide the most common ones from commands Claude runs.
 Harmless if you do not have any.
 
+### `hooks` — the first-run setup
+
+```json
+"hooks": {
+  "SessionStart": [
+    {
+      "hooks": [
+        {
+          "type": "command",
+          "command": "sh \"$CLAUDE_PROJECT_DIR/.claude/hooks/first-run-setup.sh\""
+        }
+      ]
+    }
+  ]
+},
+```
+A *hook* is a command Claude Code runs by itself at a set moment. This one runs
+the script `.claude/hooks/first-run-setup.sh` at the start of every session.
+The script checks whether `settings.local.json` exists and, if not, creates it
+with the contents shown [below](#the-second-file-settingslocaljson). If the file
+is already there it does nothing, so your own changes to it are never
+overwritten.
+
+This is what makes a fresh download of the template work without a manual
+step: git never carries `settings.local.json`, so a copy from GitHub arrives
+without it.
+
+Worth knowing:
+
+- The script runs as you, outside the sandbox, like any program you start. It
+  only ever creates that one file. It is short; open it in a text editor to see
+  for yourself.
+- Claude cannot change the script: it sits in `.claude/`, which is off limits
+  to Claude's own tools and to commands.
+- On the first start Claude Code shows a message saying the file was created.
+  If commands then fail with "Operation not permitted", close and reopen Claude
+  Code once.
+- Hooks only run once you have accepted the trust prompt for the folder.
+- To run it by hand, open a terminal in the project folder and type
+  `sh .claude/hooks/first-run-setup.sh`.
+
 ### The last two lines
 
 ```json
@@ -284,11 +335,13 @@ claude.ai. To use your connectors here, change `true` to `false`.
 
 ### The second file: `settings.local.json`
 
-This is the whole file as it ships:
+This is the whole file as the setup script creates it (a copy also lives at
+`docs/settings.local.example.json`, for reference):
 
 ```json
 {
   "sandbox": {
+    "excludedCommands": ["git init"],
     "filesystem": {
       "allowRead": [
         ".",
@@ -310,6 +363,12 @@ This is the whole file as it ships:
   cannot read them. If you keep anything sensitive in them, take them out of the
   list and run git yourself in a normal terminal instead.
 
+`excludedCommands` lets exactly one command, `git init` (start a new git
+history for this folder), run outside the fence, because inside it the command
+fails. Claude Code still asks you every time, since `git init` is also on the
+`ask` list, and `CLAUDE.md` tells Claude to run it only in that exact form, with
+nothing added.
+
 **Why is this a separate file?** When this template was tested, Claude Code
 ignored `allowRead` written in `settings.json` and applied it from this file.
 `settings.json` is the *shared* file that travels with a project;
@@ -320,8 +379,9 @@ own say-so.
 Three things follow from that:
 
 - **Git never carries this file** (it is listed in `.gitignore`, and Claude Code
-  stops treating it as yours if git tracks it). A spare copy lives at
-  `docs/settings.local.example.json`.
+  stops treating it as yours if git tracks it). That is why the setup script
+  exists: it recreates the file the first time Claude Code starts in a fresh
+  copy. See [`hooks`](#hooks--the-first-run-setup) above.
 - **Claude Code writes to this file too.** When you click "Yes, and don't ask
   again" on a prompt, the choice is saved here, in a `"permissions"` section
   alongside the `"sandbox"` one. Open the file now and then to see what you have
@@ -329,7 +389,8 @@ Three things follow from that:
   section alone. Nothing in this file can override a `deny` rule in
   `settings.json`.
 - **If it goes missing, nothing is exposed.** Everything simply stays blocked,
-  this project included, and test 6 fails until you put the file back.
+  this project included, until the setup script recreates the file at the next
+  start.
 
 ---
 
@@ -401,6 +462,7 @@ To do it by hand, the whole file becomes:
 ```json
 {
   "sandbox": {
+    "excludedCommands": ["git init"],
     "filesystem": {
       "allowRead": [
         ".",
@@ -434,6 +496,7 @@ installed with `pyenv`:
 ```json
 {
   "sandbox": {
+    "excludedCommands": ["git init"],
     "filesystem": {
       "allowRead": [
         ".",
@@ -469,6 +532,7 @@ reading and writing. For `npm`:
 ```json
 {
   "sandbox": {
+    "excludedCommands": ["git init"],
     "filesystem": {
       "allowRead": [
         ".",
@@ -499,6 +563,7 @@ If you are building a website and want to preview it on your own computer:
 ```json
 {
   "sandbox": {
+    "excludedCommands": ["git init"],
     "filesystem": {
       "allowRead": [
         ".",
@@ -524,7 +589,7 @@ nearly always the better answer.
 ```json
 {
   "sandbox": {
-    "excludedCommands": ["docker *"],
+    "excludedCommands": ["git init", "docker *"],
     "filesystem": {
       "allowRead": [
         ".",
@@ -614,16 +679,20 @@ Code after each change.
 
 **Step 1. Is `settings.local.json` there?** Look in the `.claude` folder (on a
 Mac, press `Cmd` + `Shift` + `.` in Finder to show hidden files). If the file is
-missing, copy `docs/settings.local.example.json` into `.claude/` and rename the
-copy to `settings.local.json`. This is the usual cause when the template came
-from GitHub, because git never carries that file.
+missing, the setup script has not run. Open VS Code's terminal (*Terminal → New
+Terminal*; it opens in the project folder) and run
+`sh .claude/hooks/first-run-setup.sh`, which creates the file. If that script is
+missing too, copy `docs/settings.local.example.json` into `.claude/` and rename
+the copy to `settings.local.json`.
 
 **Step 2. Does it still have its `"sandbox"` section?** Open it and compare it
 with [the listing above](#the-second-file-settingslocaljson). It must contain the
 `"allowRead"` list with `"."` in it. If it has been damaged, or you are not sure,
-the quickest fix is to replace the `"sandbox"` section with the one from
-`docs/settings.local.example.json`. Check the commas and brackets: a single
-mistake makes Claude Code ignore the whole file.
+the quickest fix is to delete the file and restart Claude Code: the setup script
+creates a fresh one. (You lose any "don't ask again" choices saved in it, which
+is harmless.) Or replace just the `"sandbox"` section with the one from the
+listing. Check the commas and brackets: a single mistake makes Claude Code
+ignore the whole file.
 
 **Step 3. Is git tracking the file?** It should not be. If you deliberately added
 `settings.local.json` to git, Claude Code stops treating it as your personal file

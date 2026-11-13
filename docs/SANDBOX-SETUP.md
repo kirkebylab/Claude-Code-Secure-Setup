@@ -21,7 +21,7 @@ In this template the fence is set up like this:
 | Read installed programs and system files outside your home folder | Yes. Commands could not run otherwise |
 | Change anything outside this project           | **No** |
 | Contact a website                              | Only after you approve that site |
-| Run outside the sandbox if the sandbox gets in the way | **No** (strict mode) |
+| Run outside the sandbox if the sandbox gets in the way | **No** (strict mode). The one exception is `git init`, which always asks you first |
 | Run at all if the sandbox cannot start         | **No** (Claude Code refuses to start) |
 
 ---
@@ -139,7 +139,7 @@ in, is in [SETTINGS-EXPLAINED.md](SETTINGS-EXPLAINED.md#recipes).
 | What you see | Why | Safest fix |
 | :----------- | :-- | :--------- |
 | A prompt asking to allow a website | Commands cannot reach any site until you say so | Approve it if you recognise it and it fits the task. Choose "don't ask again" only for sites you will use constantly |
-| Even `ls` fails, in the project folder itself | Your home folder is blocked but this project was not re-opened inside it. Usually `.claude/settings.local.json` is missing or has a typing mistake | See ["Commands cannot read the project at all"](SETTINGS-EXPLAINED.md#commands-cannot-read-the-project-at-all) |
+| Even `ls` fails, in the project folder itself | Your home folder is blocked but this project was not re-opened inside it. Usually `.claude/settings.local.json` is missing or has a typing mistake | Close and reopen Claude Code once: the setup script creates the file if it is missing. Still failing? See ["Commands cannot read the project at all"](SETTINGS-EXPLAINED.md#commands-cannot-read-the-project-at-all) |
 | `node`, `python`, or another tool "cannot be found" or is "not permitted" | That tool was installed inside your home folder, which is blocked | Re-open just that tool's folder (Recipe 3) |
 | Installing packages fails on a cache folder | Package managers keep a cache in your home folder, which commands can neither read nor write | Often you can ignore it: most installers carry on without their cache. Otherwise open up that one folder (Recipe 4) |
 | A local web server will not start ("address" or "bind" error) | Opening a network port is off by default | Turn on `allowLocalBinding` (Recipe 5) |
@@ -183,15 +183,16 @@ Things worth knowing:
 - **The personal file never travels through git.** That is deliberate (if git
   tracks the file, Claude Code stops treating it as yours). Copying the project
   folder on your own computer keeps it. Downloading the template from GitHub does
-  not, so recreate it from `docs/settings.local.example.json`. Step 3 of the
-  Quick start in the main README walks through it.
+  not, so a small setup script recreates it the first time Claude Code starts.
+  See [the `hooks` section](SETTINGS-EXPLAINED.md#hooks--the-first-run-setup)
+  of the settings guide.
 - **The `.` in that file means "this project folder", wherever it is.** You do
   not need to edit it when you copy the template to a new place.
 - **Other projects are blocked too.** A project in `~/Projects/a` cannot be read
   from a Claude session opened in `~/Projects/b`.
 - **If the personal file goes missing, the failure is safe.** Everything stays
-  blocked, including the project, so Claude simply cannot work until you put it
-  back. Nothing gets exposed.
+  blocked, including the project, so Claude simply cannot work until the setup
+  script recreates the file at the next start. Nothing gets exposed.
 
 ---
 

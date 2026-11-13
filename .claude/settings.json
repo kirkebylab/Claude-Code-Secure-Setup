@@ -56,7 +56,8 @@
       ],
       "denyWrite": [
         "./reference",
-        "./private"
+        "./private",
+        "./.claude"
       ],
       "allowWrite": []
     },
@@ -99,6 +100,18 @@
         }
       ]
     }
+  },
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "sh \"$CLAUDE_PROJECT_DIR/.claude/hooks/first-run-setup.sh\""
+          }
+        ]
+      }
+    ]
   },
   "enableAllProjectMcpServers": false,
   "disableClaudeAiConnectors": true
