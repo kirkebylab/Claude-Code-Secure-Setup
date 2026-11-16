@@ -111,6 +111,16 @@
           }
         ]
       }
+    ],
+    "SessionEnd": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "sh \"$CLAUDE_PROJECT_DIR/log-session.sh\""
+          }
+        ]
+      }
     ]
   },
   "enableAllProjectMcpServers": false,

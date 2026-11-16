@@ -26,6 +26,11 @@ credentials.json
 .claude/settings.local.json
 CLAUDE.local.md
 
+# Backups you make before editing the settings. Keep them on disk, out of git.
+.claude/settings.json.backup
+.claude/*.backup
+*-backup.json
+
 # Operating system clutter
 .DS_Store
 Thumbs.db
@@ -47,3 +52,27 @@ venv/
 
 # Logs
 *.log
+
+# Cached web responses from the tools in tools/ (safe to delete at any time)
+tools/.cache/
+
+# The AI-use log is your own working record, not part of this template, so none
+# of its contents are committed here. The folder and its README are tracked so a
+# fresh copy knows what goes there; everything written into it is yours.
+#
+# Using this template for a real project and want your own logs in git? Delete
+# the three lines below.
+workspace/ai-use-log/.last-logged-commit
+workspace/ai-use-log/sessions/
+workspace/ai-use-log/DISCLOSURE.md
+
+# Literature reviews are your own work, not part of this template, so none of a
+# review folder is committed here. That covers both the downloaded papers, which
+# are other people's copyrighted work and mostly not redistributable, and the
+# summaries and reference files, which belong to whoever ran the review.
+#
+# Using this template for a real project and want your reviews in git? Delete the
+# line below, and add back a rule for the papers themselves:
+#     workspace/Literature_Review_*/**/*.pdf
+#     workspace/Literature_Review_*/**/*_fulltext.txt
+workspace/Literature_Review_*/
