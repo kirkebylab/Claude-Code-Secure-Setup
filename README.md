@@ -93,8 +93,10 @@ result.
 Tests 1 to 4 check that the locks hold. Tests 5 and 6 check that Claude can still
 do its job. You need both.
 
-**Shortcut:** type `/test-setup` and Claude runs all six for you and reports a
-table. Read the table yourself rather than taking its summary on trust.
+**Shortcut:** type `/test-setup` and Claude runs all six for you, reports a table, and
+adds the result to [SECURITY-CHECKS.md](SECURITY-CHECKS.md) so you have a dated record of
+when the protections were last confirmed. Read the table yourself rather than taking its
+summary on trust.
 
 **If Claude ever tells you the phrase about a giraffe, the protection is not
 working.** Stop and go to [Troubleshooting](#troubleshooting).
@@ -143,6 +145,10 @@ go. Each is also a slash command: type `/` in Claude Code and pick one.
 
 [prompts/README.md](prompts/README.md) explains how to add your own.
 
+Changing a file in `prompts/` does not change its slash command: the command is a
+separate copy that only you can edit. After editing a prompt, run `sh sync-prompts.sh`
+in a terminal and restart Claude Code.
+
 ### Handy commands inside Claude Code
 
 | Type this      | What it shows |
@@ -151,6 +157,14 @@ go. Each is also a slash command: type `/` in Claude Code and pick one.
 | `/permissions` | Every allow, ask, and deny rule currently in force |
 | `/status`      | Which settings files were loaded |
 | `/doctor`      | Problems with your installation or settings files |
+
+### Recording how AI was used
+
+The project keeps a record of what Claude did, in `workspace/ai-use-log/`, so you can
+report AI use in a paper and retrace your own steps later. Half of it is written
+automatically from git; the other half is Claude's account of what was asked and what
+went wrong. Two short blocks need pasting into files Claude cannot edit to switch it on:
+see [docs/AI-USE-LOG.md](docs/AI-USE-LOG.md).
 
 ### Save your work with git
 
@@ -219,6 +233,11 @@ Being clear about the limits is part of being secure.
 
 ## Troubleshooting
 
+**Start here:** [docs/WHEN-CLAUDE-IS-BLOCKED.md](docs/WHEN-CLAUDE-IS-BLOCKED.md) sorts the
+common "Claude says it cannot do that" messages into the ones that mean the protection is
+working and the few that mean something is wrong. The rest of this section covers the
+latter.
+
 **Claude could read `private/TEST-SECRET.txt`, or another test gave the wrong
 result.**
 
@@ -262,6 +281,9 @@ your-project/
 ├── README.md                 ← you are here
 ├── CLAUDE.md                 ← instructions Claude reads at the start of every session
 ├── .gitignore                ← keeps secrets out of git and GitHub
+├── sync-prompts.sh           ← you run this to copy prompts/ into the slash commands
+├── log-session.sh            ← records what changed, into workspace/ai-use-log/
+├── SECURITY-CHECKS.md        ← dated log of every time the six tests were run
 ├── .claude/
 │   ├── settings.json         ← the rules: everything that restricts Claude
 │   ├── settings.local.json   ← personal file: re-opens this project (never shared through git)
@@ -269,9 +291,12 @@ your-project/
 │   │   └── first-run-setup.sh ← creates settings.local.json on first start if it is missing
 │   └── commands/             ← the slash commands (/test-setup, /save-work, ...)
 ├── docs/
+│   ├── README.md             ← which guide to read for what
+│   ├── WHEN-CLAUDE-IS-BLOCKED.md ← what to do when Claude says it cannot do something
 │   ├── SANDBOX-SETUP.md      ← setting up and understanding the sandbox
 │   ├── SETTINGS-EXPLAINED.md ← every setting explained, plus recipes for changes
 │   └── settings.local.example.json ← what the setup script creates, for reference
+├── tools/                    ← command-line tools for verifying and fetching papers
 ├── prompts/                  ← ready-made prompts; the slash commands are copies of these
 ├── workspace/                ← Claude can read and change
 ├── reference/                ← Claude can read only

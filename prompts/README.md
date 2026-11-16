@@ -11,7 +11,11 @@ command in `.claude/commands/`. Type `/` in Claude Code and pick one:
 | `/test-setup` | Runs the six safety tests from the main README and reports pass or fail | [test-setup.md](test-setup.md) |
 | `/save-work` | Checks your changes for passwords and keys, then saves them with git | [save-work.md](save-work.md) |
 | `/qpcr-demo` | Walks you through analysing the fake qPCR dataset in `reference/` | [qpcr-demo.md](qpcr-demo.md) |
-| `/literature-review your topic` | Finds, downloads, summarises, and ranks papers on a topic | [literature-review.md](literature-review.md) |
+| `/literature-review your topic` | Finds, verifies, downloads, summarises, and ranks papers on a topic | [literature-review.md](literature-review.md) |
+
+The literature-review prompt ends with a field guide telling Claude how to fetch full
+texts properly: which official open-access services to use, which routes are dead ends,
+and where to stop. It is part of that prompt, not a separate file.
 
 **2. Copy and paste.** Open a prompt file, select everything, copy it, and paste
 it into the Claude chat box. Replace anything in `[SQUARE BRACKETS]` first.
@@ -20,10 +24,23 @@ it into the Claude chat box. Replace anything in `[SQUARE BRACKETS]` first.
 
 - Claude can read this folder, and asks you before changing anything in it.
   The slash-command copies in `.claude/commands/` can only be changed by you.
-- Editing a prompt here does **not** change its slash command. The command
-  file in `.claude/commands/` has the same text with a few extra lines at the
-  top. Change both, or ask Claude to prepare the updated command file for you
-  to copy in.
+- Editing a prompt here does **not** change its slash command. The command is a
+  separate copy in `.claude/commands/`, and Claude is not allowed to write there,
+  so the two drift apart as soon as a prompt is improved. To re-copy them all,
+  open a terminal in the project folder and run:
+
+  ```bash
+  sh sync-prompts.sh
+  ```
+
+  It keeps the few lines at the top of each command file (the description shown
+  in the `/` menu) and replaces only the body. Restart Claude Code afterwards.
+  You run it yourself: the sandbox stops Claude writing to `.claude/`, which is
+  the point.
+- If a command loses those top lines it also loses
+  `disable-model-invocation: true`, which means Claude may decide to run it on
+  its own rather than waiting for you to type it. `sync-prompts.sh` warns you
+  when a command is missing them.
 - Some prompts need the internet (the literature review, and installing Python
   packages for the qPCR demo). Claude Code asks you to approve each website the
   first time. Approve only sites that make sense for the task.
@@ -42,8 +59,10 @@ it into the Claude chat box. Replace anything in `[SQUARE BRACKETS]` first.
    (*Terminal → New Terminal*, which opens in the project folder):
 
    ```bash
-   cp prompts/weekly-summary.md .claude/commands/
+   sh sync-prompts.sh
    ```
+
+   That copies every prompt into `.claude/commands/`, creating any that are missing.
 
 3. Optional: open the copy in `.claude/commands/` and add these lines at the
    very top. The first gives the command a description in the `/` menu; the
