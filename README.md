@@ -141,7 +141,7 @@ go. Each is also a slash command: type `/` in Claude Code and pick one.
 | `/test-setup` | Claude runs the six tests above and reports pass or fail |
 | `/save-work` | Claude checks your changes for passwords and keys, then saves them with git |
 | `/qpcr-demo` | A guided analysis of the fake qPCR dataset in `reference/` |
-| `/literature-review your topic` | Claude finds, downloads, summarises and ranks papers on a topic |
+| `/literature-review your topic` | Claude finds, downloads, summarises and ranks papers on a topic, and makes reference files for EndNote, Mendeley and Zotero |
 
 [prompts/README.md](prompts/README.md) explains how to add your own.
 

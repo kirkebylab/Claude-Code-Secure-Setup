@@ -11,7 +11,7 @@ command in `.claude/commands/`. Type `/` in Claude Code and pick one:
 | `/test-setup` | Runs the six safety tests from the main README and reports pass or fail | [test-setup.md](test-setup.md) |
 | `/save-work` | Checks your changes for passwords and keys, then saves them with git | [save-work.md](save-work.md) |
 | `/qpcr-demo` | Walks you through analysing the fake qPCR dataset in `reference/` | [qpcr-demo.md](qpcr-demo.md) |
-| `/literature-review your topic` | Finds, verifies, downloads, summarises, and ranks papers on a topic | [literature-review.md](literature-review.md) |
+| `/literature-review your topic` | Finds, verifies, downloads, summarises, and ranks papers on a topic, and makes reference files for EndNote, Mendeley and Zotero | [literature-review.md](literature-review.md) |
 
 The literature-review prompt ends with a field guide telling Claude how to fetch full
 texts properly: which official open-access services to use, which routes are dead ends,
