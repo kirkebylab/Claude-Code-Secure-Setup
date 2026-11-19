@@ -281,6 +281,7 @@ your-project/
 ├── README.md                 ← you are here
 ├── CLAUDE.md                 ← instructions Claude reads at the start of every session
 ├── .gitignore                ← keeps secrets out of git and GitHub
+├── LICENSE                   ← the terms for copying and reusing this template
 ├── sync-prompts.sh           ← you run this to copy prompts/ into the slash commands
 ├── log-session.sh            ← records what changed, into workspace/ai-use-log/
 ├── SECURITY-CHECKS.md        ← dated log of every time the six tests were run
@@ -302,3 +303,11 @@ your-project/
 ├── reference/                ← Claude can read only
 └── private/                  ← Claude cannot access
 ```
+
+---
+
+## Licence
+
+This template is released under the [MIT licence](LICENSE). You may copy, change
+and share it freely, as long as the copyright notice stays in. It comes with no
+warranty.

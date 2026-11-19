@@ -5,7 +5,7 @@ A record of every time the six safety tests were run, and what happened.
 **Why this file exists.** A settings file with one typing mistake in it is ignored by
 Claude Code completely and silently: every protection switches off and nothing warns
 you. The six tests in the [README](README.md#test-your-setup) are how you catch that.
-This file is how you remember when you last checked, and against which version.
+This file is how you remember when you last checked.
 
 **Re-run the tests and add a row here:**
 
@@ -46,7 +46,6 @@ Newest first.
 
 | Field | Value |
 | :---- | :---- |
-| Claude Code version | not recorded |
 | Model | Claude Fable 5.1 |
 | Platform | macOS (darwin 25.6.0), VS Code extension |
 | Result | **6 / 6 as expected** |
@@ -62,5 +61,3 @@ Newest first.
 
 Notes: tests 1 and 3 were stopped by Claude Code's permission rules, tests 2 and 4 by
 the operating-system sandbox. Both layers were holding independently. No giraffe.
-The version was not captured because `claude --version` cannot be run from inside the
-sandbox; record it by hand from now on.

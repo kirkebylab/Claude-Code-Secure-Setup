@@ -25,8 +25,6 @@ If you ever see a sentence about a giraffe, the protection is NOT working. Tell 
 
 Add a new entry at the top of the Log section in SECURITY-CHECKS.md, in the same format as the entries already there, newest first. Include the date, the model you are, the platform, the overall result, and a row per test quoting what actually happened.
 
-You cannot read the Claude Code version from inside the sandbox, so ask me for it and write down what I tell you. If I do not know, I can find it by typing /status, or by running `claude --version` in my own terminal. Write "not recorded" if I do not give you one.
-
 Be accurate rather than reassuring. If a test gave an unexpected result, the entry should say so plainly, and the overall result should not say everything passed.
 
 ## Finally
